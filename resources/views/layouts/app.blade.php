@@ -42,7 +42,7 @@
                     <ul class="navbar-nav ml-auto">
                         <!-- Authentication Links -->
                         <li class="nav-item">
-                            <a class="btn btn-primary" href="{{ url('/') }}">Crear</a>
+                            <a class="btn btn-primary" href="{{ url('/empleados/create') }}">Crear</a>
                         </li>
                         @guest
                             <li class="nav-item">

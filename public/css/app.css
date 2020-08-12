@@ -10904,3 +10904,15 @@ a.text-dark:focus {
   }
 }
 
+.app-form > div {
+  margin: 1em;
+}
+
+.padding {
+  padding: 1em;
+}
+
+.actions {
+  margin-top: 1em;
+}
+
