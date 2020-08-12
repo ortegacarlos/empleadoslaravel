@@ -1,4 +1,4 @@
-{!! Form::open(['route' => [$empleado->url(), $empleado->id], 'method' => $empleado->method(), 'class' => 'app-form']) !!}
+{!! Form::open(['route' => [$empleado->url(), $empleado->id], 'method' => $empleado->method(), 'onsubmit' => 'alert("Datos almacenados correctamente.")', 'class' => 'app-form']) !!}
     <div>
         {!! Form::label('nombre', 'Nombre completo *') !!}
         {!! Form::text('nombre', $empleado->nombre, ['class' => 'form-control', 'placeholder' => 'Nombre completo del empleado', 'required' => 'required']) !!}

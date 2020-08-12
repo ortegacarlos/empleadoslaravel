@@ -16,6 +16,9 @@
                         <a href="{{ url('/empleados/'.$empleado->id.'/edit') }}" class="btn btn-secondary">
                             <span>Editar</span>
                         </a>
+                        {!! Form::open(['method' => 'DELETE', 'route' => ['empleados.destroy', $empleado->id], 'onsubmit' => 'return confirm("¿Estás seguro de eliminar el empleado?")']) !!}
+                            <input type="submit" value="Eliminar" class="btn btn-danger">
+                        {!! Form::close() !!}
                     </div>
                 </div>
             </div>

@@ -100,7 +100,16 @@ class EmpleadosController extends Controller
      */
     public function edit($id)
     {
-        //
+        $empleado = Empleado::find($id);
+        $areas = Area::getAreas();
+        $roles = Rol::getRoles();
+        $empleadoRoles = EmpleadoRol::getEmpleadoRoles($id);
+        $options = [
+            'M' => 'Masculino',
+            'F' => 'Femenino',
+        ];
+
+        return view('empleados.edit', ['empleado' => $empleado, 'areas' => $areas, 'options' => $options, 'roles' => $roles, 'empleado_roles' => $empleadoRoles]);
     }
 
     /**
@@ -112,7 +121,35 @@ class EmpleadosController extends Controller
      */
     public function update(Request $request, $id)
     {
-        //
+        $empleado = Empleado::find($id);
+        $areas = Area::getAreas();
+        $roles = Rol::getRoles();
+        $empleadoRoles = EmpleadoRol::getEmpleadoRoles($id);
+        $options = [
+            'M' => 'Masculino',
+            'F' => 'Femenino',
+        ];
+
+        $empleado->nombre = $request->nombre;
+        $empleado->email = $request->email;
+        $empleado->sexo = $request->sexo;
+        $empleado->area_id = $request->area;
+        $empleado->boletin = $request->boletin ? 1 : 0;
+        $empleado->descripcion = $request->descripcion;
+
+        if($empleado->save()) {
+            if($request->roles) {
+                foreach($request->roles as $rol) {
+                    DB::table('empleado_rol')
+                        ->updateOrInsert(
+                            ['empleado_id' => $id],
+                            ['rol_id' => $rol]);
+                }
+            }
+            return redirect('/empleados');
+        } else {
+            return view('empleados.edit', ['empleado' => $empleado, 'areas' => $areas, 'options' => $options, 'roles' => $roles, 'empleado_roles' => $empleadoRoles]);
+        }
     }
 
     /**
@@ -123,6 +160,8 @@ class EmpleadosController extends Controller
      */
     public function destroy($id)
     {
-        //
+        DB::table('empleado_rol')->where('empleado_id', $id)->delete();
+        Empleado::destroy($id);
+        return redirect('/empleados');
     }
 }
