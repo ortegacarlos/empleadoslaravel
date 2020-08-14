@@ -107,12 +107,19 @@ class EmpleadosController extends Controller
     public function show($id)
     {
         $empleado = Empleado::find($id);
-        $area = Area::find($empleado->area_id);
-        $empleado->sexo = ($empleado->sexo == 'M') ? 'Masculino' : 'Femenino';
-        $empleado->area = $area->nombre;
-        $empleado->boletin = $empleado->boletin ? 'Si' : 'No';
+        if(isset($empleado)) {
+            $area = Area::find($empleado->area_id);
+            $empleado->sexo = ($empleado->sexo == 'M') ? 'Masculino' : 'Femenino';
+            $empleado->area = $area->nombre;
+            $empleado->boletin = $empleado->boletin ? 'Si' : 'No';
 
-        return view('empleados.show', ['empleado' => $empleado]);
+            return view('empleados.show', ['empleado' => $empleado]);
+        } else {
+            \Alert::danger('El empleado buscado no está registrado.')
+                ->button('Ver empleados', '/empleados', 'primary');
+
+            return view('alert');
+        }
     }
 
     /**
