@@ -18,4 +18,16 @@ class Rol extends Model
 
         return $rolesAll;
     }
+
+    public static function getIdRoles()
+    {
+        $rolesFind = DB::table('roles')->get();
+        $rolesAll = [];
+
+        foreach($rolesFind as $rolFind) {
+            $rolesAll[] = $rolFind->id;
+        }
+
+        return $rolesAll;
+    }
 }

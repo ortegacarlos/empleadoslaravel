@@ -18,4 +18,17 @@ class Area extends Model
 
         return $areasAll;
     }
+
+    public static function getIdAreas()
+    {
+        $areas = new Area;
+        $areasFind = $areas->all();
+        $areasAll = [];
+
+        foreach($areasFind as $areaFind) {
+            $areasAll[] = $areaFind['id'];
+        }
+
+        return $areasAll;
+    }
 }

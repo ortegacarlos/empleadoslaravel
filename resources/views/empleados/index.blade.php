@@ -5,6 +5,5 @@
         <div>
             <empleados-component></empleados-component>
         </div>
-        <div class="actions d-flex justify-content-center"></div>
     </div>
 @endsection

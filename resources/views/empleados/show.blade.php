@@ -12,13 +12,17 @@
                     <h5 class="card-subtitle mb-2">Área: {{ $empleado->area }} </h5>
                     <h5 class="card-subtitle mb-2">Boletin: {{ $empleado->boletin }} </h5>
                     <p class="card-text">{{ $empleado->descripcion }}</p>
-                    <div class="card-actions text-center">
-                        <a href="{{ url('/empleados/'.$empleado->id.'/edit') }}" class="btn btn-secondary">
-                            <span>Editar</span>
-                        </a>
-                        {!! Form::open(['method' => 'DELETE', 'route' => ['empleados.destroy', $empleado->id], 'onsubmit' => 'return confirm("¿Estás seguro de eliminar el empleado?")']) !!}
-                            <input type="submit" value="Eliminar" class="btn btn-danger">
-                        {!! Form::close() !!}
+                    <div class="card-actions row justify-content-center">
+                        <div class="mr-3">
+                            <a href="{{ url('/empleados/'.$empleado->id.'/edit') }}" class="btn btn-secondary">
+                                <span>Editar</span>
+                            </a>
+                        </div>
+                        <div class="ml-3">
+                            {!! Form::open(['method' => 'DELETE', 'route' => ['empleados.destroy', $empleado->id], 'onsubmit' => 'return confirm("¿Estás seguro de eliminar el empleado?")']) !!}
+                                <input type="submit" value="Eliminar" class="btn btn-danger">
+                            {!! Form::close() !!}
+                        </div>
                     </div>
                 </div>
             </div>

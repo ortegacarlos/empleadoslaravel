@@ -9,6 +9,7 @@ use App\Rol;
 use App\EmpleadoRol;
 use App\Http\Resources\EmpleadosCollection;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Validation\Rule;
 
 class EmpleadosController extends Controller
 {
@@ -43,6 +44,8 @@ class EmpleadosController extends Controller
             'F' => 'Femenino',
         ];
 
+        \Alert::message('Los campos con * son obligatorios', 'info');
+
         return view('empleados.create', ['empleado' => $empleado, 'areas' => $areas, 'options' => $options, 'roles' => $roles, 'empleado_roles' => []]);
     }
 
@@ -54,6 +57,20 @@ class EmpleadosController extends Controller
      */
     public function store(Request $request)
     {
+        $areas = Area::getIdAreas();
+        $roles = Rol::getIdRoles();
+
+        $request->validate([
+            'nombre' => 'required',
+            'email' => 'required',
+            'sexo' => 'required',
+            'area' => ['required',
+                Rule::in($areas)],
+            'descripcion' => 'required',
+            'roles.*' => ['required',
+                Rule::in($areas)],
+        ]);
+
         $dataEmpleado = [
             'nombre' => $request->nombre,
             'email' => $request->email,
@@ -69,8 +86,14 @@ class EmpleadosController extends Controller
                     DB::table('empleado_rol')->insertGetId(['empleado_id' => $nuevoEmpleado->id, 'rol_id' => $rol]);
                 }
             }
-            return redirect('/empleados');
+
+            \Alert::success('La información del empleado ' . $request->nombre . ' ha sido guardada satisfactoriamente.')
+                ->button('Ver empleados', '/empleados', 'primary');
+
+            return view('alert');
         } else {
+            \Alert::message('La información no ha podido ser guardada', 'danger');
+
             return view('empleados.create');
         }
     }
@@ -81,13 +104,13 @@ class EmpleadosController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function show(Request $request, $id)
+    public function show($id)
     {
         $empleado = Empleado::find($id);
-
-        if($request->wantsJson()) {
-            return new EmpleadosCollection($empleado);
-        }
+        $area = Area::find($empleado->area_id);
+        $empleado->sexo = ($empleado->sexo == 'M') ? 'Masculino' : 'Femenino';
+        $empleado->area = $area->nombre;
+        $empleado->boletin = $empleado->boletin ? 'Si' : 'No';
 
         return view('empleados.show', ['empleado' => $empleado]);
     }
@@ -109,6 +132,8 @@ class EmpleadosController extends Controller
             'F' => 'Femenino',
         ];
 
+        \Alert::message('Los campos con * son obligatorios', 'info');
+
         return view('empleados.edit', ['empleado' => $empleado, 'areas' => $areas, 'options' => $options, 'roles' => $roles, 'empleado_roles' => $empleadoRoles]);
     }
 
@@ -121,6 +146,20 @@ class EmpleadosController extends Controller
      */
     public function update(Request $request, $id)
     {
+        $areasid = Area::getIdAreas();
+        $rolesid = Rol::getIdRoles();
+
+        $validatedData = $request->validate([
+            'nombre' => 'required',
+            'email' => 'required',
+            'sexo' => 'required',
+            'area' => ['required',
+                Rule::in($areasid)],
+            'descripcion' => 'required',
+            'roles.*' => ['required',
+                Rule::in($rolesid)],
+        ]);
+
         $empleado = Empleado::find($id);
         $areas = Area::getAreas();
         $roles = Rol::getRoles();
@@ -138,6 +177,9 @@ class EmpleadosController extends Controller
         $empleado->descripcion = $request->descripcion;
 
         if($empleado->save()) {
+            DB::table('empleado_rol')
+                ->where('empleado_id', $id)
+                ->delete();
             if($request->roles) {
                 foreach($request->roles as $rol) {
                     DB::table('empleado_rol')
@@ -146,8 +188,14 @@ class EmpleadosController extends Controller
                             ['rol_id' => $rol]);
                 }
             }
-            return redirect('/empleados');
+
+            \Alert::success('La información del empleado ' . $request->nombre . ' ha sido actualizada satisfactoriamente.')
+                ->button('Ver empleados', '/empleados', 'primary');
+
+            return view('alert');
         } else {
+            \Alert::message('La información no ha podido ser actualizada', 'danger');
+
             return view('empleados.edit', ['empleado' => $empleado, 'areas' => $areas, 'options' => $options, 'roles' => $roles, 'empleado_roles' => $empleadoRoles]);
         }
     }
@@ -160,8 +208,11 @@ class EmpleadosController extends Controller
      */
     public function destroy($id)
     {
-        DB::table('empleado_rol')->where('empleado_id', $id)->delete();
+        DB::table('empleado_rol')
+            ->where('empleado_id', $id)
+            ->delete();
         Empleado::destroy($id);
+
         return redirect('/empleados');
     }
 }
